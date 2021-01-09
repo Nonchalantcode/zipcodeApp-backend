@@ -15,6 +15,16 @@ app.get('/zipcodes/suggestions/:zip', (req, res) => {
     res.json({ suggestions })
 })
 
+app.get('/zipcodes/:zip', (req, res) => {
+    const { zip } = req.params
+    const results = data.zipCodes[zip]
+    if(results === undefined) {
+        res.status(404).json({ 'zip code': zip, message: `Zip code ${zip} isn't valid/registered.` })
+    } else {
+        res.json({'zip code': zip, ...results})
+    }
+})
+
 const PORT = process.env.PORT || 8000
 app.listen(PORT, () => {
     console.log(`Application running on port ${PORT}`)
