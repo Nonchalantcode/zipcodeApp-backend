@@ -1,6 +1,11 @@
 const data = require('./data/zip')
 const express = require('express')
 const app = express()
+const path = require('path')
+
+app.use(
+    express.static(path.resolve(__dirname, 'static', 'build'))    
+)
 
 app.get('/zipcodes/suggestions/:zip', (req, res) => {
     const { zip } = req.params
@@ -10,7 +15,6 @@ app.get('/zipcodes/suggestions/:zip', (req, res) => {
         const currentZipCode = data.all[i]
         if(suggestions.length === limit) break
         if(currentZipCode.startsWith(zip)) suggestions.push(currentZipCode)
-        ++i
     }
     res.json({ suggestions })
 })
