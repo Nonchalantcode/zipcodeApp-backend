@@ -2,6 +2,9 @@ const data = require('./data/zip')
 const express = require('express')
 const app = express()
 const path = require('path')
+const cors = require('cors')
+
+app.use(cors())
 
 app.use(
     express.static(path.resolve(__dirname, 'static', 'build'))    
