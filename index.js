@@ -1,38 +1,16 @@
-const data = require('./data/zip')
-const express = require('express')
-const app = express()
-const path = require('path')
-const cors = require('cors')
+require('dotenv').config()
+const axios = require('axios')
 
-app.use(cors())
+const BASE_URL = process.env.BASE_URL;
 
-app.use(
-    express.static(path.resolve(__dirname, 'static', 'build'))    
-)
-
-app.get('/zipcodes/suggestions/:zip', (req, res) => {
-    const { zip } = req.params
-    const suggestions = []
-    const limit = 5 /* limit the amount of suggestions to 5 */
-    for(let i = 0, len = data.all.length; i < len; i++) {
-        const currentZipCode = data.all[i]
-        if(suggestions.length === limit) break
-        if(currentZipCode.startsWith(zip)) suggestions.push(currentZipCode)
-    }
-    res.json({ suggestions })
-})
-
-app.get('/zipcodes/:zip', (req, res) => {
-    const { zip } = req.params
-    const results = data.zipCodes[zip]
-    if(results === undefined) {
-        res.status(404).json({ 'zip code': zip, message: `Zip code ${zip} isn't valid/registered.` })
+exports.handler = async (event) => {
+    const zip = event['zip']
+    const req = await axios.get(BASE_URL)
+    const data = req['data']
+    const results = data['zipCodes']
+    if(results[zip] === undefined) {
+        return { 'zip code': zip, ...results }
     } else {
-        res.json({'zip code': zip, ...results})
+        return { 'zip code': zip, ...results[zip] }
     }
-})
-
-const PORT = process.env.PORT || 8000
-app.listen(PORT, () => {
-    console.log(`Application running on port ${PORT}`)
-})
+}
